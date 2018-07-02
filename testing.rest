@@ -1,0 +1,82 @@
+
+GET http://localhost:3004/api/blogs
+
+###
+
+POST http://localhost:3004/api/blogs
+Content-Type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZWRkaWUyMjIiLCJpZCI6IjViMTJjNWRlYWFjMDE4MzA1ZjY0Y2U0ZCIsImlhdCI6MTUyODA1MTE4OH0.Q4VCJqqAqIEf8SN_Tyz5iiit-_PYjvXL07LZU20PML4
+
+{
+    "title": "CCC Post",
+    "author": "Menis Mopin",
+    "url": "http://localhost:4afdh040"
+}
+
+###
+
+###
+
+POST http://localhost:3004/api/blogs
+Content-Type: application/json
+
+{
+    "title": "Y Post",
+    "author": "Canis Luplin",
+    "url": "http://localhost:4afdh040"
+}
+
+###
+
+DELETE http://localhost:3004/api/blogs/5a422aa71b54a676234d17f8
+
+
+###
+
+POST http://localhost:3004/api/login
+
+{
+    "username": "salaatti",
+    "password": "kastike"
+}
+
+
+###
+
+POST http://localhost:3004/api/login
+content-type: application/json
+
+{
+    "username": "freddie222",
+    "password": "improperpassword"
+}
+
+###
+
+POST http://localhost:3004/api/login
+content-type: application/json
+
+{
+    "username": "freddie222",
+    "password": "improperpasswor"
+}
+
+###
+
+DELETE http://localhost:3004/api/blogs/5b143e585e0a6d344365d7d1
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZWRkaWUyMjIiLCJpZCI6IjViMTJjNWRlYWFjMDE4MzA1ZjY0Y2U0ZCIsImlhdCI6MTUyODA1MTE4OH0.Q4VCJqqAqIEf8SN_Tyz5iiit-_PYjvXL07LZU20PML4
+
+
+###
+
+GET http://localhost:3004/api/blogs/5b143e106e7f9534371b360c/comments
+
+###
+
+POST http://localhost:3004/api/blogs/5b143e106e7f9534371b360c/comments
+Content-Type: application/json
+
+{
+    "comment": "This blog post is rather bulgar and binappropriate."
+}
