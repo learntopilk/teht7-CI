@@ -35,7 +35,7 @@ let options = {
   replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
 }
 mongoose.connect(config.mongoUrl, options)
-  .then(console.log('DB up and connected: ', config.mongoUr))
+  .then(console.log('DB up and connected: ', config.mongoUrl))
   .catch(err => console.log(err))
 
 const server = http.createServer(app)
