@@ -32,9 +32,10 @@ blogsRouter.post('/', async (req, res) => {
     const token = req.body.token
 
     if (!token) {
-      console.log('no token')
+      //console.log('no token')
       return res.status(400).send({ error: 'No token found in request' })
     }
+
     const decoded = jwt.verify(token, process.env.SECRET)
 
     if (!token || !decoded.id) {
@@ -49,7 +50,7 @@ blogsRouter.post('/', async (req, res) => {
     const user = await User.findById(decoded.id)
 
     if (!user) {
-      return res.status(404).send('User not found!')
+      return res.status(403).send('User not found!')
     }
 
     let author
@@ -67,27 +68,27 @@ blogsRouter.post('/', async (req, res) => {
     }
 
     const blog = new Blog({
-      title: req.body.title,
+      title: req.body.title || 'test',
       author,
-      url: req.body.url,
+      url: req.body.url || '',
       likes,
       user: user._id
     })
 
     const result = await blog.save()
-    console.log('blogs, notes, notes:')
+    //console.log('blogs, notes, notes:')
     console.log(user.blogs)
     if (!user.blogs) {
       user.blogs = []
     }
-    console.log(user.blogs)
+    //console.log(user.blogs)
 
     user.blogs = user.blogs.concat(result._id)
-    console.log(user.blogs)
+    //console.log(user.blogs)
 
     await user.save()
 
-    res.json(formatBlogPost(result))
+    res.status(201).json(formatBlogPost(result))
   } catch (e) {
     console.log(e)
     res.status(500).json({ error: 'Something went seriously wrong.' })
@@ -118,8 +119,8 @@ blogsRouter.delete('/:id', async (request, response) => {
     return response.status(404).json({ error: 'Not found' })
   }
   console.log('check-up: ')
-  console.log(blogToDelete.user)
-  console.log(decoded.id)
+  //console.log(blogToDelete.user)
+  //console.log(decoded.id)
   if (blogToDelete.user.toString() !== decoded.id.toString() || !blogToDelete.user.toString() || blogToDelete.user.toString() === '') {
     return response.status(403).send({ error: 'Incorrect user' })
   }

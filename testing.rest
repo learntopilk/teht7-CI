@@ -15,6 +15,18 @@ authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZyZ
 
 ###
 
+POST http://localhost:3004/api/users
+Content-Type: application/json
+
+{
+    "username": "salaatti",
+    "password": "kastike",
+    "name": "Sergei Shkripal"
+}
+###
+GET http://localhost:3004/api/users
+Content-Type: application/json
+
 ###
 
 POST http://localhost:3004/api/blogs

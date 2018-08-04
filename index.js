@@ -10,6 +10,7 @@ const loginRouter = require('./controllers/login')
 const tokenDigger = require('./utils/tokenDigger')
 //require('dotenv').config()
 const config = require('./utils/config.js')
+const path = require('path')
 
 
 app.use(cors())
@@ -21,16 +22,13 @@ app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
 //app.use('/*', express.static('build'))
 
-
-
-/**
- *
- * var options = {
-  server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-  replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
-};
-mongoose.connect(secrets.db, options);
- */
+// catch-all
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/build/index.html'), err => {
+    console.log(err)
+    res.status(500)
+  })
+})
 
 let options = {
   server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },

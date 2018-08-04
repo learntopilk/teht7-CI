@@ -5,6 +5,8 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const { blogsInDb, initialBlogs, usersInDb } = require('../utils/tests_helper.js')
 
+let token
+let auth
 
 beforeAll(async () => {
   await Blog.remove({})
@@ -13,106 +15,128 @@ beforeAll(async () => {
   await Promise.all(blogObjs.map(b => b.save()))
 })
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-})
+describe('Blog API tests', async () => {
+  console.log('BEFORE everything')
 
-test('new blog post can be added', async () => {
-  const blogsPreviously = await blogsInDb()
+  beforeAll(async () => {
+    console.log('BEFOREALL')
+    const res = await api
+      .post('/api/login')
+      .send({ username: 'salaatti', password: 'kastike' })
 
-  const b = {
-    'title': 'fresh Post',
-    'author': 'prince de Bel Air',
-    'url': 'http://localhost:2222',
-    'likes': 680313
-  }
+    token = res.body.token
+    auth = 'bearer ' + token
 
-  await api
-    .post('/api/blogs')
-    .send(b)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+  })
+
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('new blog post can be added', async () => {
+    const blogsPreviously = await blogsInDb()
+    //const token = await loginAndGetToken()
+
+    const b = {
+      'title': 'fresh Post',
+      'author': 'prince de Bel Air',
+      'url': 'http://localhost:2222',
+      'likes': 680313
+    }
+    const auth = 'bearer '.concat(token)
+    await api
+      .post('/api/blogs')
+      .send(b)
+      .set('authorization', auth)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
 
-  const res = await api
-    .get('/api/blogs')
+    const res = await api
+      .get('/api/blogs')
 
-  const contents = res.body.map(bl => bl.title)
+    const contents = res.body.map(bl => bl.title)
 
-  expect(res.body.length).toBe(blogsPreviously.length + 1)
-  expect(contents).toContainEqual('fresh Post')
+    expect(res.body.length).toBe(blogsPreviously.length + 1)
+    expect(contents).toContainEqual('fresh Post')
 
-})
+  })
 
-test('blog with no content not added', async () => {
-  const blogsPreviously = await blogsInDb()
+  test('blog with no content not added', async () => {
+    const blogsPreviously = await blogsInDb()
 
-  const b = { author: 'mark dillon' }
+    const b = { author: 'mark dillon' }
 
-  await api
-    .post('/api/blogs')
-    .send(b)
-    .expect(400)
+    await api
+      .post('/api/blogs')
+      .send(b)
+      .expect(400)
 
-  const currentBlogs = await blogsInDb()
+    const currentBlogs = await blogsInDb()
 
-  expect(currentBlogs.length).toBe(blogsPreviously.length)
-})
+    expect(currentBlogs.length).toBe(blogsPreviously.length)
+  })
 
-test('POST to /api/blogs with no likes set receives likes = 0', async () => {
-  const blogsPreviously = await blogsInDb()
+  test('POST to /api/blogs with no likes set receives likes = 0', async () => {
+    const blogsPreviously = await blogsInDb()
+    //const token = await loginAndGetToken()
 
-  const b = {
-    'title': 'Sweet Post',
-    'author': 'prince de Bel Air',
-    'url': 'http://localhost:2222'
-  }
+    const b = {
+      'title': 'Sweet Post',
+      'author': 'prince de Bel Air',
+      'url': 'http://localhost:2222'
+    }
 
-  const goodRes = await api
-    .post('/api/blogs')
-    .send(b)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    const goodRes = await api
+      .post('/api/blogs')
+      .set('Accept', 'application/json')
+      .set('Content-Type', 'application/json')
+      .set('authorization', auth)
+      .send(b)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-  expect(goodRes.body.likes).toBe(0)
-  const currentBlogs = await blogsInDb()
+    expect(goodRes.body.likes).toBe(0)
+    const currentBlogs = await blogsInDb()
 
-  expect(currentBlogs.length).toBe(blogsPreviously.length + 1)
-})
+    expect(currentBlogs.length).toBe(blogsPreviously.length + 1)
+  })
 
-test('BAD REQUEST returned with POST call if url and title not supplied', async () => {
-  const blogsPreviously = await blogsInDb()
-  const incompleteBlogPost = {
-    'author': 'Karmiva Burana',
-    'likes': 41620879
-  }
+  test('BAD REQUEST returned with POST call if url and title not supplied', async () => {
+    const blogsPreviously = await blogsInDb()
+    const incompleteBlogPost = {
+      'author': 'Karmiva Burana',
+      'likes': 41620879
+    }
 
-  await api
-    .post('/api/blogs')
-    .send(incompleteBlogPost)
-    .expect(400)
+    await api
+      .post('/api/blogs')
+      .send(incompleteBlogPost)
+      .expect(400)
 
-  const res = await api
-    .get('/api/blogs')
-    .expect(200)
+    const res = await api
+      .get('/api/blogs')
+      .expect(200)
 
-  expect(res.body.length).toBe(blogsPreviously.length)
+    expect(res.body.length).toBe(blogsPreviously.length)
 
-})
+  })
 
-test('Delete operation succeeds', async () => {
-  const blogsPreviously = await blogsInDb()
-  const idOfLastPost = blogsPreviously[(blogsPreviously.length - 1)].id
+  test('Delete operation succeeds', async () => {
+    const blogsPreviously = await blogsInDb()
+    const idOfLastPost = blogsPreviously[(blogsPreviously.length - 1)].id
 
-  await api
-    .delete(`/api/blogs/${idOfLastPost}`)
-    .expect(200)
+    await api
+      .delete(`/api/blogs/${idOfLastPost}`)
+      .set('authorization', auth)
+      .expect(200)
 
-  const currentBlogs = await blogsInDb()
-  expect(currentBlogs.length).toBe(blogsPreviously.length - 1)
+    const currentBlogs = await blogsInDb()
+    expect(currentBlogs.length).toBe(blogsPreviously.length - 1)
+  })
 })
 
 test('PUT operation succeeds', async () => {
