@@ -1,5 +1,5 @@
 {
-  "name": "tehtavat4",
+  "name": "tehtavat7",
   "version": "1.0.0",
   "description": "full stack open tasks 7",
   "main": "index.js",
@@ -41,7 +41,6 @@
   "jest": {
     "verbose": true,
     "testURL": "http://localhost"
-
 
   }
 }
