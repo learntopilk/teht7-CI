@@ -15,6 +15,6 @@ if (process.env.NODE_ENV === 'test') {
   console.log('Process.env: ', process.env)
 }
 
-console.log(port, mongoUrl, "PORT AND MONGOURL")
+console.log(port, mongoUrl, 'PORT AND MONGOURL')
 
 module.exports = { port, mongoUrl }
